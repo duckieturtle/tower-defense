@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KINGDOM RUSH: FRONTIER DEFENSE</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">⚔️</div>
+      <div>
+        <h1>KINGDOM RUSH</h1>
+        <div class="subtitle">FRONTIER DEFENSE // ROYAL TD</div>
+      </div>
+    </div>
+
+    <!-- HUD Stats -->
+    <div class="stats-bar">
+      <!-- Mode Badge -->
+      <div class="stat-chip mode" id="chip-mode" title="Click to view Game Modes & Intel [Hot-key: M]">
+        <span class="label">Mode</span>
+        <span class="value" id="stat-mode" style="font-size: 13px; letter-spacing: 0.5px;">NORMAL</span>
+      </div>
+
+      <!-- Gold Treasury -->
+      <div class="stat-chip credits" title="Kingdom Treasury">
+        <span class="label">Gold 🪙</span>
+        <span class="value" id="stat-credits">350</span>
+      </div>
+
+      <!-- Kingdom Lives -->
+      <div class="stat-chip lives" title="Royal Kingdom Lives">
+        <span class="label">Lives 🛡️</span>
+        <span class="value" id="stat-lives">20</span>
+      </div>
+
+      <!-- Hero Card Quick Status -->
+      <div class="stat-chip hero-chip" id="hero-hud-card" title="Sir Gerald Lightseeker (Click to select & command, or press [H])">
+        <div class="hero-chip-top">
+          <span class="hero-icon">👑</span>
+          <span class="hero-name" id="hero-hud-name">Sir Gerald</span>
+          <span class="hero-lvl-badge" id="hero-hud-lvl">LV 1</span>
+        </div>
+        <div class="hero-hp-bar">
+          <div class="hero-hp-fill" id="hero-hud-hp-bar"></div>
+        </div>
+      </div>
+
+      <!-- Waves Defended -->
+      <div class="stat-chip wave">
+        <span class="label">Wave</span>
+        <span class="value" id="stat-wave">0 / 25</span>
+      </div>
+
+      <!-- Honor Score -->
+      <div class="stat-chip score">
+        <span class="label">Honor</span>
+        <span class="value" id="stat-score">0</span>
+      </div>
+    </div>
+
+    <!-- Quick System Controls -->
+    <div class="top-controls">
+      <div class="mode-selector">
+        <select id="select-mode" title="Switch Game Mode">
+          <option value="normal">👑 Mode: Normal Campaign</option>
+          <option value="hard">🔥 Mode: Veteran (+40% HP)</option>
+          <option value="nightmare">💀 Mode: Iron Challenge (1 HP)</option>
+          <option value="endless">🌌 Mode: Heroic Endless (∞)</option>
+          <option value="blitz">⚡ Mode: Blitz Rush</option>
+          <option value="sandbox">🧪 Mode: King's Vault (Sandbox)</option>
+        </select>
+      </div>
+      <div class="map-selector">
+        <select id="select-map" title="Switch Kingdom Map">
+          <option value="linirea_plains">Map: Linirea Plains</option>
+          <option value="crossroads">Map: Twin Rivers</option>
+          <option value="citadel_pass">Map: Citadel Pass</option>
+        </select>
+      </div>
+      <button class="ctrl-btn" id="btn-mode-info" title="View Game Modes Matrix [M]">📋 MODES</button>
+      <button class="ctrl-btn active" id="btn-speed-1">1X</button>
+      <button class="ctrl-btn" id="btn-speed-2">2X</button>
+      <button class="ctrl-btn" id="btn-speed-4">4X</button>
+      <button class="ctrl-btn" id="btn-pause">⏸ PAUSE</button>
+      <button class="ctrl-btn" id="btn-mute">🔊 SOUND</button>
+    </div>
+  </header>
+
+  <!-- Battlefield Canvas -->
+  <main>
+    <div class="canvas-wrapper">
+      <canvas id="game-canvas" width="1280" height="768"></canvas>
+    </div>
+
+    <!-- Bottom Command Deck -->
+    <div class="deck-container">
+      <!-- 1. Tower Construction Arsenal (4 iconic Kingdom Rush towers) -->
+      <section class="build-section">
+        <div class="section-title">
+          <span>TOWER ARSENAL</span>
+          <span style="font-size: 10px; color: #d97706;">HOTKEYS [1-4]</span>
+        </div>
+        <div class="towers-grid kingdom-towers-grid">
+          <!-- Archer Tower -->
+          <div class="tower-card" data-tower="archer" title="Archer Tower: Rapid bow fire against ground & flying enemies [Hotkey: 1]">
+            <span class="badge-key">1</span>
+            <span class="icon">🏹</span>
+            <span class="t-name">Archer Tower</span>
+            <span class="t-cost">70 G</span>
+          </div>
+
+          <!-- Militia Barracks -->
+          <div class="tower-card" data-tower="barracks" title="Militia Barracks: Trains 3 soldiers to block path & engage foes [Hotkey: 2]">
+            <span class="badge-key">2</span>
+            <span class="icon">🛡️</span>
+            <span class="t-name">Barracks</span>
+            <span class="t-cost">70 G</span>
+          </div>
+
+          <!-- Mage Spire -->
+          <div class="tower-card" data-tower="mage" title="Mage Spire: Armor-piercing magical bolts ignoring physical armor [Hotkey: 3]">
+            <span class="badge-key">3</span>
+            <span class="icon">🔮</span>
+            <span class="t-name">Mage Spire</span>
+            <span class="t-cost">100 G</span>
+          </div>
+
+          <!-- Dwarven Artillery (Bombard) -->
+          <div class="tower-card" data-tower="artillery" title="Dwarven Bombard: Heavy explosive cannonballs with massive area damage [Hotkey: 4]">
+            <span class="badge-key">4</span>
+            <span class="icon">💣</span>
+            <span class="t-name">Bombard</span>
+            <span class="t-cost">125 G</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Selected Tower Inspector -->
+      <section class="inspector-panel hidden" id="tower-inspector">
+        <div class="insp-header">
+          <h3 id="insp-name">Archer Tower</h3>
+          <span class="insp-lvl" id="insp-level">LEVEL 1</span>
+        </div>
+
+        <div class="insp-stats-grid">
+          <div class="insp-stat-box">
+            <span class="lbl" id="insp-lbl-dmg">DAMAGE</span>
+            <span class="val" id="insp-damage">5</span>
+          </div>
+          <div class="insp-stat-box">
+            <span class="lbl">RANGE</span>
+            <span class="val" id="insp-range">145</span>
+          </div>
+          <div class="insp-stat-box">
+            <span class="lbl" id="insp-lbl-rate">RATE</span>
+            <span class="val" id="insp-firerate">1.6/s</span>
+          </div>
+          <div class="insp-stat-box">
+            <span class="lbl" id="insp-lbl-dps">DPS</span>
+            <span class="val" id="insp-dps">8</span>
+          </div>
+        </div>
+
+        <div style="font-size: 10px; color: #94a3b8; display: flex; justify-content: space-between;">
+          <span>Kills: <strong id="insp-kills" style="color: #f1f5f9;">0</strong></span>
+          <span>Damage Dealt: <strong id="insp-total-dmg" style="color: #f1f5f9;">0</strong></span>
+        </div>
+
+        <div class="insp-actions">
+          <button class="action-btn btn-strategy" id="btn-target-strategy" title="Change target priority">
+            TARGET: FIRST
+          </button>
+          <button class="action-btn btn-rally hidden" id="btn-set-rally" title="Set Soldier Rally Point on road [R]">
+            🚩 RALLY POINT [R]
+          </button>
+          <button class="action-btn btn-upgrade" id="btn-upgrade">
+            <span>UPGRADE [U]</span>
+            <span id="upgrade-cost" style="font-size: 10px; opacity: 0.9;">110 G</span>
+          </button>
+          <button class="action-btn btn-sell" id="btn-sell">
+            <span>SELL [S]</span>
+            <span id="sell-value" style="font-size: 10px; opacity: 0.9;">+49 G</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 3. Wave Commander & Tactical Kingdom Spells -->
+      <section class="tactical-section">
+        <!-- Wave Launch -->
+        <div class="wave-call-container">
+          <div class="wave-timer-text" id="wave-timer">NEXT WAVE IN: 18s</div>
+          <button class="btn-early-wave" id="btn-early-wave" title="Launch wave immediately for gold bounty [Hotkey: N]">
+            <span>CALL WAVE [N]</span>
+            <span id="early-wave-bonus" style="color: #facc15; font-size: 11px;">+108 G</span>
+          </button>
+        </div>
+
+        <!-- Kingdom Tactical Spells -->
+        <div class="abilities-container">
+          <!-- Call Reinforcements -->
+          <button class="ab-btn" id="btn-ab-reinforcements" title="Call Reinforcements: Spawns 2 militia anywhere on the road [Hotkey: Q]">
+            <span class="key">Q</span>
+            <span class="icon">👨‍🌾</span>
+            <span class="lbl">REINFORCE</span>
+            <div class="ab-cd-overlay" id="cd-ab-reinforcements"></div>
+          </button>
+
+          <!-- Rain of Fire -->
+          <button class="ab-btn" id="btn-ab-meteor" title="Rain of Fire: Calls fiery meteors from the sky [Hotkey: W]">
+            <span class="key">W</span>
+            <span class="icon">☄️</span>
+            <span class="lbl">RAIN OF FIRE</span>
+            <div class="ab-cd-overlay" id="cd-ab-meteor"></div>
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Keyboard Cheat Sheet Footer -->
+  <footer>
+    <span><kbd>1-4</kbd> Build Tower</span>
+    <span><kbd>Click Hero</kbd> / <kbd>H</kbd> Command Hero</span>
+    <span><kbd>R</kbd> Set Rally Point</span>
+    <span><kbd>Q</kbd> Reinforcements</span>
+    <span><kbd>W</kbd> Rain of Fire</span>
+    <span><kbd>N</kbd> Early Wave</span>
+    <span><kbd>U</kbd> Upgrade</span>
+    <span><kbd>S</kbd> Sell</span>
+    <span><kbd>Space</kbd> Pause</span>
+    <span><kbd>Esc</kbd> Cancel</span>
+  </footer>
+
+  <!-- Modal: Game Modes Intel Matrix -->
+  <div class="modal-overlay hidden" id="modal-modes">
+    <div class="modal-card modal-modes-card">
+      <div class="modal-modes-header">
+        <div>
+          <h2>KINGDOM CAMPAIGN PROTOCOLS & RECORDS</h2>
+          <div style="font-size: 11px; color: #94a3b8; letter-spacing: 1px;">SELECT GAME MODE PROFILE & VIEW YOUR HIGH SCORES</div>
+        </div>
+        <button class="btn-close-modal" id="btn-close-modes" title="Close Modal">✕</button>
+      </div>
+      <div class="modes-grid-container" id="modes-grid-container">
+        <!-- Dynamically rendered by UIManager -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Game Over -->
+  <div class="modal-overlay hidden" id="modal-gameover">
+    <div class="modal-card gameover">
+      <div class="modal-mode-badge" id="gameover-mode-badge">NORMAL MODE</div>
+      <h2>KINGDOM FALLEN!</h2>
+      <p>Hostile hordes have breached the royal defenses and overwhelmed the realm.</p>
+      
+      <div class="record-banner hidden" id="gameover-record-banner"></div>
+
+      <div class="modal-stats">
+        <div>
+          <div class="modal-stat-val" id="final-score">0</div>
+          <div style="font-size: 11px; color: #94a3b8;">FINAL HONOR</div>
+        </div>
+        <div>
+          <div class="modal-stat-val" id="final-waves">0</div>
+          <div style="font-size: 11px; color: #94a3b8;">WAVES REPELLED</div>
+        </div>
+      </div>
+      <button class="btn-primary btn-restart-game" style="background: #dc2626; border-color: #ef4444;">DEFEND AGAIN</button>
+    </div>
+  </div>
+
+  <!-- Modal: Victory -->
+  <div class="modal-overlay hidden" id="modal-victory">
+    <div class="modal-card">
+      <div class="modal-mode-badge" id="victory-mode-badge">NORMAL MODE</div>
+      <h2 style="color: #10b981;" id="victory-title">ROYAL VICTORY!</h2>
+      <p id="victory-desc">The Kingdom stands triumphant! All invading hordes and dark bosses have been routed!</p>
+      
+      <div class="record-banner hidden" id="victory-record-banner"></div>
+
+      <div class="modal-stats">
+        <div>
+          <div class="modal-stat-val" id="victory-score" style="color: #10b981;">0</div>
+          <div style="font-size: 11px; color: #94a3b8;">FINAL HONOR</div>
+        </div>
+        <div>
+          <div class="modal-stat-val" id="victory-waves" style="color: #38bdf8;">25 / 25</div>
+          <div style="font-size: 11px; color: #94a3b8;">WAVES CONQUERED</div>
+        </div>
+      </div>
+      <button class="btn-primary btn-restart-game">PLAY AGAIN</button>
+    </div>
+  </div>
+
+  <!-- Scripts in dependency order -->
+  <script src="js/config.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/maps.js"></script>
+  <script src="js/soldiers.js"></script>
+  <script src="js/heroes.js"></script>
+  <script src="js/enemies.js"></script>
+  <script src="js/towers.js"></script>
+  <script src="js/abilities.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
